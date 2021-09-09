@@ -1,0 +1,4 @@
+export GFDL_MKMF_TEMPLATE=gfort
+
+export F90=mpifort
+export CC=mpicc
