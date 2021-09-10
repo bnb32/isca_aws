@@ -6,13 +6,13 @@ PROJECT_CODE="UCOR0044"
 ROOT_DIR="/data/%s" %(NETID)
 SCRATCH_DIR=ROOT_DIR+"/scratch"
 BASE_DIR="/home/%s/environment" %(USERNAME)
-ISCA_DIR=ROOT_DIR+"/my_isca"
+ISCA_DIR=ROOT_DIR+"/isca"
 MAIN_DIR=BASE_DIR+"/isca_aws"
 # directory of the Isca source code
 GFDL_BASE=ISCA_DIR
 os.environ['GFDL_BASE'] = GFDL_BASE
 # "environment" configuration for emps-gv4
-GFDL_ENV="aws"
+GFDL_ENV="gfortran"
 os.environ['GFDL_ENV'] = GFDL_ENV
 # temporary working directory used in running the model
 GFDL_WORK=ROOT_DIR+"/gfdl_work"
