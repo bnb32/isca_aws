@@ -12,7 +12,7 @@ cmd+="; cd %s" %(env.ISCA_DIR)
 cmd+="; conda env create -f ci/environment-py3.9.yml"
 cmd+="; conda activate isca_env"
 
-#os.system(cmd)
+os.system(cmd)
 
 cmd="cd %s" %(env.ISCA_DIR)
 cmd+="; cd src/extra/python/"

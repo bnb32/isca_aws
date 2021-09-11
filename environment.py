@@ -12,7 +12,8 @@ MAIN_DIR=BASE_DIR+"/isca_aws"
 GFDL_BASE=ISCA_DIR
 os.environ['GFDL_BASE'] = GFDL_BASE
 # "environment" configuration for emps-gv4
-GFDL_ENV="gfortran"
+#GFDL_ENV="gfortran"
+GFDL_ENV="aws"
 os.environ['GFDL_ENV'] = GFDL_ENV
 # temporary working directory used in running the model
 GFDL_WORK=ROOT_DIR+"/gfdl_work"
