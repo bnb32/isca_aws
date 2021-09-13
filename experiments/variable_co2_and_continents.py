@@ -37,15 +37,15 @@ cb.compile()  # compile the source code to working directory $GFDL_WORK/codebase
 adjust_co2_script = os.path.join(base_dir,'../preprocessing/adjust_co2.py')
 os.system(f'python {adjust_co2_script} -multiplier {args.multiplier}')
 
-adjust_land_script = os.path.join(base_dir,'../preprocessing/adjust_continents.py')
-os.system(f'python {adjust_land_script} -land_year {args.land_year}')
+#adjust_land_script = os.path.join(base_dir,'../preprocessing/adjust_continents.py')
+#os.system(f'python {adjust_land_script} -land_year {args.land_year}')
 
 # create an Experiment object to handle the configuration of model parameters
 # and output diagnostics
-exp = Experiment(f'variable_co2_{args.multiplier}x_continents_{args.land_year}_experiment', codebase=cb)
+exp = Experiment(f'variable_co2_{args.multiplier}x_continents_{args.land_year}Ma_experiment', codebase=cb)
 
 exp.inputfiles = [os.path.join(base_dir,f'input/co2_{args.multiplier}x.nc'),
-                  os.path.join(base_dir,f'input/land_masks/continents_{args.land_year}.nc'),
+                  os.path.join(base_dir,f'input/land_masks/continents_{args.land_year}Ma.nc'),
                   #os.path.join(base_dir,'input/sst_clim_amip.nc'), 
                   os.path.join(os.environ.get('GFDL_BASE'),'exp/test_cases/realistic_continents/input/siconc_clim_amip.nc')]
 
@@ -80,7 +80,7 @@ exp.namelist = nml
 
 exp.update_namelist({
     'spectral_init_cond_nml':{
-        'topog_file_name': f'continents_{args.land_year}.nc',
+        'topog_file_name': f'continents_{args.land_year}Ma.nc',
         'topography_option': 'input'
     },
 
@@ -106,7 +106,7 @@ exp.update_namelist({
         'two_stream_gray': True,     #Use the grey radiation scheme
         'convection_scheme': 'SIMPLE_BETTS_MILLER', #Use simple Betts miller convection            
         'land_option': 'input',
-        'land_file_name' : f'INPUT/continents_{args.land_year}.nc',
+        'land_file_name' : f'INPUT/continents_{args.land_year}Ma.nc',
     },    
 
 })
