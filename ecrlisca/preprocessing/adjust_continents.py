@@ -1,6 +1,4 @@
-import sys
-sys.path.insert(0,'../')
-import environment
+import ecrlisca.environment
 import os
 import netCDF4 as nc
 import numpy as np
@@ -12,7 +10,7 @@ args=parser.parse_args()
 
 base_dir = os.path.dirname(os.path.realpath(__file__))
 land_path = os.path.join(os.environ.get('GFDL_BASE'),'input/land_masks/')
-input_dir = os.path.join(base_dir,f'../experiments/input/land_masks/')
+input_dir = os.path.join(os.environ.get('ISCA_REPO_DIR'),'experiments/input/land_masks/')
 new_file = os.path.join(input_dir,f'continents_{args.land_year}.nc')
 
 os.system(f'mkdir -p {input_dir}')

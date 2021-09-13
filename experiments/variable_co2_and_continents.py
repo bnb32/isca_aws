@@ -34,7 +34,7 @@ cb = IscaCodeBase.from_directory(GFDL_BASE)
 
 cb.compile()  # compile the source code to working directory $GFDL_WORK/codebase
 
-adjust_co2_script = os.path.join(base_dir,'../preprocessing/adjust_co2.py')
+adjust_co2_script = os.path.join(base_dir,'ecrlisca/preprocessing/adjust_co2.py')
 os.system(f'python {adjust_co2_script} -multiplier {args.multiplier}')
 
 #adjust_land_script = os.path.join(base_dir,'../preprocessing/adjust_continents.py')
@@ -42,10 +42,10 @@ os.system(f'python {adjust_co2_script} -multiplier {args.multiplier}')
 
 # create an Experiment object to handle the configuration of model parameters
 # and output diagnostics
-exp = Experiment(f'variable_co2_{args.multiplier}x_continents_{args.land_year}Ma_experiment', codebase=cb)
+exp = Experiment(f'variable_co2_{args.multiplier}x_continents_{args.land_year}_experiment', codebase=cb)
 
 exp.inputfiles = [os.path.join(base_dir,f'input/co2_{args.multiplier}x.nc'),
-                  os.path.join(base_dir,f'input/land_masks/continents_{args.land_year}Ma.nc'),
+                  os.path.join(base_dir,f'input/land_masks/continents_{args.land_year}.nc'),
                   #os.path.join(base_dir,'input/sst_clim_amip.nc'), 
                   os.path.join(os.environ.get('GFDL_BASE'),'exp/test_cases/realistic_continents/input/siconc_clim_amip.nc')]
 
@@ -57,6 +57,7 @@ diag.add_file('atmos_monthly', 30, 'days', time_units='days')
 diag.add_field('dynamics', 'ps', time_avg=True)
 diag.add_field('dynamics', 'bk')
 diag.add_field('dynamics', 'pk')
+#diag.add_field('atmosphere', 'bucket_depth', time_avg=True)
 diag.add_field('dynamics', 'zsurf') #need at least ps, pk, bk and zsurf to do vertical interpolation onto plevels from sigma
 diag.add_field('atmosphere', 'precipitation', time_avg=True)
 diag.add_field('mixed_layer', 't_surf', time_avg=True)
@@ -80,15 +81,15 @@ exp.namelist = nml
 
 exp.update_namelist({
     'spectral_init_cond_nml':{
-        'topog_file_name': f'continents_{args.land_year}Ma.nc',
+        'topog_file_name': f'continents_{args.land_year}.nc',
         'topography_option': 'input'
     },
 
     'two_stream_gray_rad_nml': {
         'rad_scheme':  'byrne',        
-        'atm_abs': 0.2,                      # Add a bit of solar absorption of sw
-        'do_seasonal':  True,          #do_seasonal=false uses the p2 insolation profile from Frierson 2006. do_seasonal=True uses the GFDL astronomy module to calculate seasonally-varying insolation.
-        'equinox_day':  0.75,          #A calendar parameter to get autumn equinox in september, as in the standard earth calendar.
+        'atm_abs': 0.2, # Add a bit of solar absorption of sw
+        'do_seasonal':  True, #do_seasonal=True uses the GFDL astronomy module to calculate seasonally-varying insolation.
+        'equinox_day':  0.75, #A calendar parameter to get autumn equinox in september, as in the standard earth calendar.
         'do_read_co2':  True, #Read in CO2 timeseries from input file
         'co2_file':  f'co2_{args.multiplier}x', #Tell model name of co2 input file        
     },
@@ -106,7 +107,7 @@ exp.update_namelist({
         'two_stream_gray': True,     #Use the grey radiation scheme
         'convection_scheme': 'SIMPLE_BETTS_MILLER', #Use simple Betts miller convection            
         'land_option': 'input',
-        'land_file_name' : f'INPUT/continents_{args.land_year}Ma.nc',
+        'land_file_name' : f'INPUT/continents_{args.land_year}.nc',
     },    
 
 })

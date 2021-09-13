@@ -1,6 +1,4 @@
-import sys
-sys.path.insert(0,'../')
-import environment
+import ecrlisca.environment
 import os
 import netCDF4 as nc
 import numpy as np

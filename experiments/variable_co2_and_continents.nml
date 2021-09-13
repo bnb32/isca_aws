@@ -12,6 +12,9 @@
     calendar = 'thirty_day'/
 
 &idealized_moist_phys_nml
+    !bucket          = .true.,
+    !init_bucket_depth_land = 1,
+    !max_bucket_depth_land = 2,
     do_damping      = .true.,
     turb            = .true.,
     mixed_layer_bc  = .true.,
@@ -43,6 +46,8 @@
     idealized_moist_model = .true. /
 
 &mixed_layer_nml
+    !do_qflux = .true.,
+    !land_h_capacity_prefactor = 0.1,
     tconst = 285.,
     prescribe_initial_dist = .true.,
     evaporation = .true.,

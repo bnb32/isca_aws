@@ -4,15 +4,12 @@ import dash_core_components as dcc
 import dash_html_components as html
 import os
 import time
-import sys
-sys.path.insert(0,'../')
-import environment
+import ecrlisca.environment
 
 server = flask.Flask(__name__)
 app = dash.Dash(__name__, server=server)
 
-
-animation_directory = os.path.join(os.environ.get('ISCA_REPO_DIR'),'postprocessing/anims/')
+animation_directory = os.path.join(os.environ.get('ISCA_REPO_DIR'),'ecrlisca/postprocessing/anims/')
 
 files = [f for f in os.listdir(animation_directory)]
 
