@@ -1,0 +1,103 @@
+! For parameters which are frequently set, in order to keep python scripts tidy and clear, it may be useful to read these from an external namelist file.
+! This example illustrates how to do this for two experiments configured with realistic continents, where the only differences are the choice of surface condition, with one using fixed SSTs and the other Q-fluxes.
+! If you find you have a 'default' set of parameter choices, this method may be useful to ensure these are set consistently for all of your experiments. ! NB Note that this example is for a specific case, and would likely need modifying for your specific set-up.
+
+&main_nml
+    days   = 30,
+    hours  = 0,
+    minutes = 0,
+    seconds = 0,
+    dt_atmos = 720,
+    current_date = 0001 1 1 0 0 0,
+    calendar = 'thirty_day'/
+
+&idealized_moist_phys_nml
+    do_damping      = .true.,
+    turb            = .true.,
+    mixed_layer_bc  = .true.,
+    do_virtual      = .false.,
+    do_simple       = .true.,
+    two_stream_gray = .true.,                  !Don't use grey radiation
+    convection_scheme = 'FULL_BETTS_MILLER',    !Use the full betts-miller convection scheme
+    roughness_mom   = 3.21e-05,                   !Ocean roughness lengths  
+    roughness_heat  = 3.21e-05,                   !Ocean roughness lengths  
+    roughness_moist = 3.21e-05 /                  !Ocean roughness lengths  
+
+&vert_turb_driver_nml
+    do_mellor_yamada       = .false.,  ! default: True
+    do_diffusivity         = .true.,   ! default: False
+    do_simple              = .true.,   ! default: False
+    constant_gust          = 0.0,      ! default: 1.0
+    use_tau                = .false./        
+
+&diffusivity_nml
+    do_entrain = .false.,
+    do_simple = .true./
+
+&surface_flux_nml
+    use_virtual_temp = .false.,
+    do_simple  = .true.,
+    old_dtaudv = .true./
+
+&atmosphere_nml
+    idealized_moist_model = .true. /
+
+&mixed_layer_nml
+    tconst = 285.,
+    prescribe_initial_dist = .true.,
+    evaporation = .true.,
+    depth = 2.5,                        !Mixed layer depth
+    albedo_value = 0.38 /                !Ocean albedo value
+
+&qe_moist_convection_nml
+    rhbm = .7, 
+    Tmin = 160, 
+    Tmax = 350 /
+
+&lscale_cond_nml
+    do_simple=.true.,
+    do_evap = .true./
+
+&sat_vapor_pres_nml
+    do_simple = .true. /
+
+&damping_driver_nml
+    do_rayleigh   = .true.,
+    trayfric      = -0.25,
+    sponge_pbottom=  5000.,
+    do_conserve_energy = .true./
+
+&two_stream_gray_rad_nml
+    rad_scheme   = 'byrne',
+    atm_abs       = 0.2,
+    do_seasonal   = .true.
+    do_read_co2 = .true.
+    co2_file = 'co2' /
+
+&diag_manager_nml
+    mix_snapshot_average_fields = .false. /  ! time avg fields are labelled with time in middle of window
+
+&fms_nml
+    domains_stack_size = 600000 /
+
+&fms_io_nml
+   threading_write = 'single',
+   fileset_write = 'single' /
+
+&spectral_dynamics_nml
+    damping_order           = 4,
+    water_correction_limit  = 200.e2,
+    robert_coeff            = 0.03,
+    reference_sea_level_press = 1.e5,
+    num_levels              = 25,
+    valid_range_t 	        = 100. 800.,
+    initial_sphum           = 2.e-6,
+    vert_coord_option       = 'input',
+    surf_res                = 0.5,
+    scale_heights           = 11.0,
+    exponent                = 7.0, 
+	ocean_topog_smoothing   = 0.8 / !Use model's in-built spatial smoothing to smooth topography in order to prevent unwanted aliasing at low horizontal resolution    
+
+&vert_coordinate_nml
+    bk = 0.000000 0.0117665 0.0196679 0.0315244 0.0485411 0.0719344 0.1027829 0.1418581 0.1894648 0.2453219 0.3085103 0.3775033 0.4502789 0.5244989 0.5977253 0.6676441 0.7322627 0.7900587 0.8400683 0.8819111 0.9157609 0.9422770 0.9625127 0.9778177 0.9897489 1.0000000,
+    pk = 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000, /

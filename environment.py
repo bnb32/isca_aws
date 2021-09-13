@@ -7,7 +7,9 @@ ROOT_DIR="/data/%s" %(NETID)
 SCRATCH_DIR=ROOT_DIR+"/scratch"
 BASE_DIR="/home/%s/environment" %(USERNAME)
 ISCA_DIR=ROOT_DIR+"/isca"
-MAIN_DIR=BASE_DIR+"/isca_aws"
+
+ISCA_REPO_DIR=BASE_DIR+"/isca_aws"
+os.environ['ISCA_REPO_DIR'] = ISCA_REPO_DIR
 # directory of the Isca source code
 GFDL_BASE=ISCA_DIR
 os.environ['GFDL_BASE'] = GFDL_BASE

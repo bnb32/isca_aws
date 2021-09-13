@@ -7,7 +7,7 @@ ROOT_DIR="/data/${NETID}"
 SCRATCH_DIR="${ROOT_DIR}/scratch"
 BASE_DIR="/home/${USERNMAME}/environment"
 ISCA_DIR="${ROOT_DIR}/isca"
-MAIN_DIR="${BASE_DIR}/isca_aws"
+ISCA_REPO_DIR="${BASE_DIR}/isca_aws"
 
 export GFDL_BASE=${ISCA_DIR}
 export GFDL_ENV="gfortran"
