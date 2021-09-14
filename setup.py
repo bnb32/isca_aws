@@ -16,5 +16,6 @@ setup(
         'ffmpeg',
         'xesmf',
         'jupyterlab',
-        'dash']
+        'dash',
+        'flask']
 )

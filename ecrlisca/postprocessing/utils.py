@@ -157,4 +157,4 @@ def get_animation(exp,field='t_surf',level=None,vmin=None,vmax=None):
     anim_file = os.path.join(os.environ.get('ISCA_REPO_DIR'),f'ecrlisca/postprocessing/anims/{exp.path_format}_{field}.mp4')
     animation.save(anim_file, writer=writervideo)
     print(anim_file)
-    return HTML(animation.to_jshtml())        
+    #return HTML(animation.to_jshtml())        

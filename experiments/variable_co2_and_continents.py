@@ -10,13 +10,15 @@ from isca import IscaCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE
 
 import argparse
 
-from ecrlisca.preprocessing.utils import adjust_co2
+from ecrlisca.preprocessing.utils import adjust_co2, adjust_continents, solar_constant
 
 parser=argparse.ArgumentParser(description="Run variable co2 experiment")
 parser.add_argument('-multiplier',default=2)
+parser.add_argument('-co2',default=None)
 parser.add_argument('-land_year',default=0)
 parser.add_argument('-nyears',default=5,type=int)
 parser.add_argument('-ncores',default=32,type=int)
+parser.add_argument('-overwrite',action='store_true')
 args=parser.parse_args()
 
 NCORES = int(args.ncores)
@@ -35,15 +37,21 @@ cb = IscaCodeBase.from_directory(GFDL_BASE)
 # $GFDL_BASE and not the checked out git repo.
 
 cb.compile()  # compile the source code to working directory $GFDL_WORK/codebase
-
-adjust_co2(args.multiplier)
-
 # create an Experiment object to handle the configuration of model parameters
 # and output diagnostics
 exp = Experiment(f'variable_co2_{args.multiplier}x_continents_{args.land_year}_experiment', codebase=cb)
 
-exp.inputfiles = [os.path.join(base_dir,f'input/co2_{args.multiplier}x.nc'),
-                  os.path.join(base_dir,f'input/land_masks/continents_{args.land_year}.nc'),
+if args.co2 is not None:
+    co2_file = f'co2_{args.co2}ppm_continents_{args.land_year}'
+else:
+    co2_file = f'co2_{args.multiplier}x_continents_{args.land_year}'
+land_file = f'continents_{args.land_year}.nc'
+
+adjust_co2(multiplier=args.multiplier,land_year=args.land_year,co2_value=args.co2,outfile=co2_file)
+adjust_continents(args.land_year)
+
+exp.inputfiles = [os.path.join(base_dir,f'input/{co2_file}.nc'),
+                  os.path.join(base_dir,f'input/land_masks/{land_file}'),
                   #os.path.join(base_dir,'input/sst_clim_amip.nc'), 
                   os.path.join(os.environ.get('GFDL_BASE'),'exp/test_cases/realistic_continents/input/siconc_clim_amip.nc')]
 
@@ -55,7 +63,7 @@ diag.add_file('atmos_monthly', 30, 'days', time_units='days')
 diag.add_field('dynamics', 'ps', time_avg=True)
 diag.add_field('dynamics', 'bk')
 diag.add_field('dynamics', 'pk')
-#diag.add_field('atmosphere', 'bucket_depth', time_avg=True)
+diag.add_field('atmosphere', 'bucket_depth', time_avg=True)
 diag.add_field('dynamics', 'zsurf') #need at least ps, pk, bk and zsurf to do vertical interpolation onto plevels from sigma
 diag.add_field('atmosphere', 'precipitation', time_avg=True)
 diag.add_field('mixed_layer', 't_surf', time_avg=True)
@@ -79,9 +87,18 @@ exp.namelist = nml
 
 exp.update_namelist({
     'spectral_init_cond_nml':{
-        'topog_file_name': f'continents_{args.land_year}.nc',
+        'topog_file_name': f'{land_file}',
         'topography_option': 'input'
     },
+
+    #'rrtm_radiation_nml': { 
+    #    #'do_read_ozone':True, 
+    #    #'ozone_file':'ozone_1990', 
+    #    'solr_cnst': solar_constant(args.land_year), #s set solar const    ant to 1360, rather than default of 1368.22 
+    #    'dt_rad': 4320, #Use 4320 as RRTM radi    ation timestep 
+    #    'do_read_co2': True, #Read in CO2 time    series from input file 
+    #    'co2_file': f'{co2_file}' #Tell model name of     co2 input file         
+    #},
 
     'two_stream_gray_rad_nml': {
         'rad_scheme':  'byrne',        
@@ -89,7 +106,8 @@ exp.update_namelist({
         'do_seasonal':  True, #do_seasonal=True uses the GFDL astronomy module to calculate seasonally-varying insolation.
         'equinox_day':  0.75, #A calendar parameter to get autumn equinox in september, as in the standard earth calendar.
         'do_read_co2':  True, #Read in CO2 timeseries from input file
-        'co2_file':  f'co2_{args.multiplier}x', #Tell model name of co2 input file        
+        'co2_file':  f'{co2_file}', #Tell model name of co2 input file        
+        'solar_constant': solar_constant(args.land_year),
     },
 
     'idealized_moist_phys_nml': {
@@ -101,17 +119,17 @@ exp.update_namelist({
         'roughness_mom':3.21e-05,
         'roughness_heat':3.21e-05,
         'roughness_moist':3.21e-05,            
-        'do_rrtm_radiation':False,
+        #'do_rrtm_radiation':True,
         'two_stream_gray': True,     #Use the grey radiation scheme
         'convection_scheme': 'SIMPLE_BETTS_MILLER', #Use simple Betts miller convection            
         'land_option': 'input',
-        'land_file_name' : f'INPUT/continents_{args.land_year}.nc',
+        'land_file_name' : f'INPUT/{land_file}',
     },    
 
 })
 
 #Lets do a run!
 if __name__=="__main__":
-    exp.run(1, use_restart=False, num_cores=NCORES)
+    exp.run(1, use_restart=False, num_cores=NCORES, overwrite_data=args.overwrite)
     for i in range(2,12*int(args.nyears)+1):
-        exp.run(i, num_cores=NCORES)
+        exp.run(i, num_cores=NCORES, overwrite_data=args.overwrite)

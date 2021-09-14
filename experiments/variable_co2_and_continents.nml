@@ -12,14 +12,15 @@
     calendar = 'thirty_day'/
 
 &idealized_moist_phys_nml
-    !bucket          = .true.,
-    !init_bucket_depth_land = 1,
-    !max_bucket_depth_land = 2,
+    bucket          = .true.,
+    init_bucket_depth_land = 1,
+    max_bucket_depth_land = 2,
     do_damping      = .true.,
     turb            = .true.,
     mixed_layer_bc  = .true.,
     do_virtual      = .false.,
     do_simple       = .true.,
+    !do_rrtm_radiation = .true.,
     two_stream_gray = .true.,                  !Don't use grey radiation
     convection_scheme = 'FULL_BETTS_MILLER',    !Use the full betts-miller convection scheme
     roughness_mom   = 3.21e-05,                   !Ocean roughness lengths  
@@ -46,7 +47,7 @@
     idealized_moist_model = .true. /
 
 &mixed_layer_nml
-    !do_qflux = .true.,
+    do_qflux = .true.,
     !land_h_capacity_prefactor = 0.1,
     tconst = 285.,
     prescribe_initial_dist = .true.,
@@ -86,8 +87,8 @@
     domains_stack_size = 600000 /
 
 &fms_io_nml
-   threading_write = 'single',
-   fileset_write = 'single' /
+    threading_write = 'single',
+    fileset_write = 'single' /
 
 &spectral_dynamics_nml
     damping_order           = 4,
