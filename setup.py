@@ -8,11 +8,13 @@ setup(
     description='for running isca on aws',
     packages=['ecrlisca'],
     package_dir={'ecrlisca':'./ecrlisca'},
-    #install_requires=[
-    #    'matplotlib',
-    #    'xarray',
-    #    'cartopy',
-    #    'netCDF4',
-    #    'ffmpeg',
-    #    'xesmf']
+    install_requires=[
+        'matplotlib',
+        'xarray',
+        'cartopy',
+        'netCDF4',
+        'ffmpeg',
+        'xesmf',
+        'jupyterlab',
+        'dash']
 )

@@ -1,7 +1,7 @@
 import os
 import glob
 import argparse
-import ecrlisca.postprocessing.plotting as iplot
+from ecrlisca.postprocessing.utils import get_animation, define_land_colormap
 import ecrlisca.environment
 from ecrlisca.experiment import Experiment
 import warnings
@@ -14,8 +14,10 @@ parser = argparse.ArgumentParser(description="Get ISCA Animation")
 parser.add_argument('-multiplier',default=2,help="CO2 Multiplier")
 parser.add_argument('-land_year',default="0Ma",choices=land_years)
 parser.add_argument('-field',default='t_surf')
+parser.add_argument('-level',default=None)
 args=parser.parse_args()
 
 exp = Experiment(multiplier=args.multiplier,land_year=args.land_year)
 
-iplot.get_animation(exp,field=args.field)
+define_land_colormap()
+get_animation(exp,field=args.field,level=args.level)

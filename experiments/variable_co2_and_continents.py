@@ -10,6 +10,8 @@ from isca import IscaCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE
 
 import argparse
 
+from ecrlisca.preprocessing.utils import adjust_co2
+
 parser=argparse.ArgumentParser(description="Run variable co2 experiment")
 parser.add_argument('-multiplier',default=2)
 parser.add_argument('-land_year',default=0)
@@ -34,11 +36,7 @@ cb = IscaCodeBase.from_directory(GFDL_BASE)
 
 cb.compile()  # compile the source code to working directory $GFDL_WORK/codebase
 
-adjust_co2_script = os.path.join(base_dir,'ecrlisca/preprocessing/adjust_co2.py')
-os.system(f'python {adjust_co2_script} -multiplier {args.multiplier}')
-
-#adjust_land_script = os.path.join(base_dir,'../preprocessing/adjust_continents.py')
-#os.system(f'python {adjust_land_script} -land_year {args.land_year}')
+adjust_co2(args.multiplier)
 
 # create an Experiment object to handle the configuration of model parameters
 # and output diagnostics

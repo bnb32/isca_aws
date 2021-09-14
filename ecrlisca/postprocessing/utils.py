@@ -14,18 +14,11 @@ def define_land_colormap():
 
     ncolors = 256
     color_array = plt.get_cmap('gray')(range(ncolors))[::-1]
-
-    # change alpha values
-    #color_array[:,-1] = np.linspace(0.0,1.0,ncolors)
-    #color_array[-1,-1] = 1.0
-
     map_object = LinearSegmentedColormap.from_list(name='land_cmap',colors=color_array)
 
     # register this new colormap with matplotlib
     unregister_cmap('land_cmap')
     plt.register_cmap(cmap=map_object)
-
-define_land_colormap()
 
 def get_data(experiment,field='t_surf',level=None,decode_times=True):
     data = xr.open_mfdataset(experiment.files,decode_times=decode_times)

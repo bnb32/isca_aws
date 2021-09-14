@@ -54,7 +54,13 @@ def regrid_continent_maps(remap_file):
     print(f'{out_file}')
 
 
+def get_original_map_file(land_year):
+    file = glob.glob(f'{data_dest}/{zip_file.strip(".zip")}*/Map*_{land_year}Ma.nc')
+    return file
+
 files = glob.glob(f'{data_dest}/{zip_file.strip(".zip")}*/Map*.nc')
+
+
 
 if args.regrid:
     for f in files:
