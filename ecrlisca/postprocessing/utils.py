@@ -22,7 +22,8 @@ def define_land_colormap():
 
 def get_data(experiment,field='t_surf',level=None,decode_times=True):
     data = xr.open_mfdataset(experiment.files,decode_times=decode_times)
-    land = xr.open_mfdataset(experiment.land_file,decode_times=decode_times)
+    land = xr.open_mfdataset(os.path.join(os.environ.get('TOPO_DIR'),experiment.land_file),
+            decode_times=decode_times)
     
     if 'co2' in data:
         tmp = data[[field,'co2']]
@@ -93,7 +94,7 @@ def get_avg_field(data,field='t_surf',vmin=None,vmax=None):
     image.set_array(avg.sel(lon=lons))
 
     if 'co2' in data:
-        ax.set_title(f'Time Average, CO2 = {round(co2.values.mean())} ({co2.units})',fontsize=20)
+        ax.set_title(f'Time Average, CO2 = {"{:.2E}".format(co2.values.mean())} ({co2.units})',fontsize=20)
     else:
         ax.set_title(f'Time Average',fontsize=20)
 
@@ -144,7 +145,7 @@ def get_animation(exp,field='t_surf',level=None,vmin=None,vmax=None):
     def update(i):
         t = variable.time.values[i]
         if 'co2' in data:
-            ax.set_title(f'time = {t.strftime("%B %Y")}, co2 = {round(co2.values[i][0])} ({co2.units})',fontsize=20)
+            ax.set_title(f'time = {t.strftime("%B %Y")}, co2 = {"{:2E}".format(co2[i].values.mean())} ({co2.units})',fontsize=20)
         else:
             ax.set_title(f'time = {t.strftime("%B %Y")}',fontsize=20)
             

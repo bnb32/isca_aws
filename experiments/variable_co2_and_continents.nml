@@ -48,7 +48,7 @@
 
 &mixed_layer_nml
     do_qflux = .true.,
-    !land_h_capacity_prefactor = 0.1,
+    land_h_capacity_prefactor = 0.1,
     tconst = 285.,
     prescribe_initial_dist = .true.,
     evaporation = .true.,

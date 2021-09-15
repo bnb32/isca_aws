@@ -11,14 +11,11 @@ from isca import IscaCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE
 import argparse
 
 from ecrlisca.preprocessing.utils import adjust_co2, adjust_continents, solar_constant
-
-def none_or_str(arg):
-    if arg == 'None':
-        return None
-    return arg
+from ecrlisca.experiment import Experiment as ecrlExp
+from ecrlisca.misc.utils import none_or_str
 
 parser=argparse.ArgumentParser(description="Run variable co2 experiment")
-parser.add_argument('-multiplier',default=2)
+parser.add_argument('-multiplier',default=1)
 parser.add_argument('-co2',default=None,type=none_or_str)
 parser.add_argument('-land_year',default=0)
 parser.add_argument('-nyears',default=5,type=int)
@@ -44,13 +41,12 @@ cb = IscaCodeBase.from_directory(GFDL_BASE)
 cb.compile()  # compile the source code to working directory $GFDL_WORK/codebase
 # create an Experiment object to handle the configuration of model parameters
 # and output diagnostics
-exp = Experiment(f'variable_co2_{args.multiplier}x_continents_{args.land_year}_experiment', codebase=cb)
+ecrlexp = ecrlExp(multiplier=args.multiplier,land_year=args.land_year,co2_value=args.co2)
 
-if args.co2:
-    co2_file = f'co2_{args.co2}ppm_continents_{args.land_year}'
-else:
-    co2_file = f'co2_{args.multiplier}x_continents_{args.land_year}'
-land_file = f'continents_{args.land_year}.nc'
+exp = Experiment(ecrlexp.name, codebase=cb)
+
+co2_file = ecrlexp.co2_file.split('.nc')[0]
+land_file = ecrlexp.land_file
 
 adjust_co2(multiplier=args.multiplier,land_year=args.land_year,co2_value=args.co2,outfile=co2_file)
 adjust_continents(args.land_year)
