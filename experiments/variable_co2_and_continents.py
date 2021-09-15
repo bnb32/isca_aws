@@ -12,9 +12,14 @@ import argparse
 
 from ecrlisca.preprocessing.utils import adjust_co2, adjust_continents, solar_constant
 
+def none_or_str(arg):
+    if arg == 'None':
+        return None
+    return arg
+
 parser=argparse.ArgumentParser(description="Run variable co2 experiment")
 parser.add_argument('-multiplier',default=2)
-parser.add_argument('-co2',default=None)
+parser.add_argument('-co2',default=None,type=none_or_str)
 parser.add_argument('-land_year',default=0)
 parser.add_argument('-nyears',default=5,type=int)
 parser.add_argument('-ncores',default=32,type=int)
@@ -41,7 +46,7 @@ cb.compile()  # compile the source code to working directory $GFDL_WORK/codebase
 # and output diagnostics
 exp = Experiment(f'variable_co2_{args.multiplier}x_continents_{args.land_year}_experiment', codebase=cb)
 
-if args.co2 is not None:
+if args.co2:
     co2_file = f'co2_{args.co2}ppm_continents_{args.land_year}'
 else:
     co2_file = f'co2_{args.multiplier}x_continents_{args.land_year}'

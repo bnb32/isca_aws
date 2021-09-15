@@ -23,3 +23,17 @@ os.environ['GFDL_WORK'] = GFDL_WORK
 # directory for storing model output
 GFDL_DATA=ROOT_DIR+"/gfdl_data"
 os.environ['GFDL_DATA'] = GFDL_DATA
+
+RAW_TOPO_DIR = os.path.join(ISCA_REPO_DIR,'experiments/input/land_masks/raw/')
+os.environ['RAW_TOPO_DIR'] = RAW_TOPO_DIR
+
+TOPO_DIR = os.path.join(ISCA_REPO_DIR,'experiments/input/land_masks/')
+os.environ['TOPO_DIR'] = TOPO_DIR
+
+RAW_CO2_DIR = os.path.join(GFDL_BASE,'exp/test_cases/variable_co2_concentration/input/')
+os.environ['RAW_CO2_DIR'] = RAW_CO2_DIR
+
+CO2_DIR = os.path.join(ISCA_REPO_DIR,'experiments/input')
+os.environ['CO2_DIR'] = CO2_DIR
+
+os.environ['BASE_TOPO_FILE'] = os.path.join(GFDL_BASE,'input/land_masks/era_land_t42.nc')

@@ -18,13 +18,14 @@ def interp(a,b,dt):
     return a*(1-dt)+dt*b
 
 def interpolate_co2(land_year):
+
     year = float(land_year.strip('Ma'))
 
     keys = sorted(co2series,key=lambda x: float(x))
     kf = [float(k) for k in keys]
 
     if year in kf:
-        return co2series[land_year]
+        return co2series[land_year.strip('Ma')]
 
     for i,k in enumerate(keys):
         if i==0:
@@ -47,8 +48,8 @@ def adjust_co2(multiplier=2,land_year='0Ma',co2_value=None,outfile=None):
             outfile = f'co2_{co2_value}ppm_continents_{land_year}'
 
     base_dir = os.path.dirname(os.path.realpath(__file__))
-    co2_path = os.path.join(os.environ.get('GFDL_BASE'),'exp/test_cases/variable_co2_concentration/input/')
-    input_dir = os.path.join(os.environ.get('ISCA_REPO_DIR'),'experiments/input/')
+    co2_path = os.environ.get('RAW_CO2_DIR')
+    input_dir = os.environ.get('CO2_DIR')
     new_file = os.path.join(input_dir,f'{outfile}.nc')
 
     os.system(f'mkdir -p {input_dir}')
@@ -57,18 +58,17 @@ def adjust_co2(multiplier=2,land_year='0Ma',co2_value=None,outfile=None):
     filename = new_file
     ncfile = nc.Dataset(filename,'r+')
     co2 = ncfile.variables['co2']
-
-    if co2_value is None:
+        
+    if co2_value is None:    
         co2[:,:,:,:] = float(multiplier)*interpolate_co2(land_year)
-    else:
+
+    else:    
         co2[:,:,:,:] = float(co2_value)
 
     ncfile.variables['co2'][:,:,:,:] = co2[:,:,:,:]
     ncfile.close()
 
-zip_file = 'Scotese_Wright_2018_Maps_1-88_1degX1deg_PaleoDEMS_nc.zip'
-data_dest = os.path.join(os.environ.get('ISCA_REPO_DIR'),'experiments/input/land_masks')
-land_years = glob.glob(f'{data_dest}/{zip_file.strip(".zip")}*/Map*.nc')
+land_years = glob.glob(os.environ.get("RAW_TOPO_DIR")+'/Map*.nc')
 land_years = sorted([l.strip('Ma.nc').split('_')[-1] for l in land_years],key=lambda x: float(x.strip('Ma')))
 
 def adjust_continents(land_year):
@@ -77,15 +77,14 @@ def adjust_continents(land_year):
 
 def regrid_continent_data(land,land_year="0Ma"):
 
-    base_file = os.path.join(os.environ.get('GFDL_BASE'),'input/land_masks/era_land_t42.nc')
-    base = xr.open_mfdataset(base_file)
+    base = xr.open_mfdataset(os.environ.get('BASE_TOPO_FILE'))
 
     ds_out = xr.Dataset({'lat': (['lat'], base['lat'].values),
                          'lon': (['lon'], base['lon'].values)})
 
     out_file = f'continents_{land_year}.nc'
 
-    out_dir = os.path.join(os.environ.get('ISCA_REPO_DIR'),'experiments/input/land_masks')
+    out_dir = os.path.join(os.environ.get('TOPO_DIR'))
     out_file = os.path.join(out_dir,out_file)
 
     regridder = xe.Regridder(land, ds_out, 'bilinear')
@@ -101,7 +100,6 @@ def regrid_continent_data(land,land_year="0Ma"):
     os.system(f'rm -f {out_file}')
     ds_out.to_netcdf(out_file)
     print(f'{out_file}')
-    return ds_out
 
 def interpolate_land(land_year):
     year = float(land_year.strip('Ma'))
@@ -129,6 +127,13 @@ def interpolate_land(land_year):
 
 def get_original_map_data(land_year):
     land_year = str(land_year).strip('Ma')
-    file = glob.glob(f'{data_dest}/{zip_file.strip(".zip")}*/Map*_{land_year}Ma.nc')
+    file = glob.glob(os.environ.get("RAW_TOPO_DIR")+'/Map*_{land_year}Ma.nc')
     land = xr.open_mfdataset(file)
     return land
+
+def regrid_continent_maps(remap_file):
+
+    land_year = f'{remap_file.strip(".nc").split("_")[-1]}'
+    land = xr.open_mfdataset(remap_file)
+    
+    regrid_continent_data(land,land_year)
