@@ -18,3 +18,7 @@ class Experiment:
             self.co2_file = f'co2_{multiplier}x_continents_{land_year}Ma.nc'
         
         self.land_file = f'continents_{land_year}Ma.nc'
+
+        #self.solar_constant = solar_constant(land_year)
+
+        #self.co2_value = interpolate_co2(land_year)

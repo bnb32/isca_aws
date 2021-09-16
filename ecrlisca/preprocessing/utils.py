@@ -28,23 +28,23 @@ def interpolate_co2(land_year):
     keys = sorted(co2series)
     kf = [float(k) for k in keys]
 
-    if land_year in co2series:
+    if land_year in keys:
         return co2series[land_year]
 
-    if year < kf[0]:
+    if year <= kf[0]:
         return co2series[keys[0]]
 
-    if year > kf[-1]:
+    if year >= kf[-1]:
         return co2series[keys[-1]]
 
     for i in range(len(keys)):
-        if kf[i] < year < kf[i+1]:
+        if kf[i] <= year <= kf[i+1]:
             return interp(co2series[keys[i]],
                           co2series[keys[i+1]],
                           (year-kf[i])/(kf[i+1]-kf[i]))
 
 def adjust_co2(multiplier=1,land_year=0,co2_value=None,outfile=None):
-
+    
     ecrlexp = Experiment(multiplier=multiplier,land_year=land_year,co2_value=co2_value)
 
     base_dir = os.path.dirname(os.path.realpath(__file__))
@@ -67,7 +67,7 @@ def adjust_co2(multiplier=1,land_year=0,co2_value=None,outfile=None):
     ncfile.variables['co2'][:,:,:,:] = co2[:,:,:,:]
     ncfile.close()
 
-def adjust_continents(land_year):
+def adjust_continents(land_year=0,sea_level=0):
     land = interpolate_land(land_year)
     regrid_continent_data(land,land_year=land_year)
 
@@ -82,7 +82,7 @@ def regrid_continent_data(land,land_year=0):
 
     regridder = xe.Regridder(land, ds_out, 'bilinear')
     tmp = land['z'].values
-    tmp[tmp<0] = 0
+    tmp[tmp<sea_level] = 0
     #ds_out['z'].values[ds_out['z'].values < 0] = 0
     land['z'] = (land['z'].dims,tmp)
     ds_out = regridder(land)
@@ -100,17 +100,17 @@ def interpolate_land(land_year):
     keys = sorted(land_years)
     kf = [float(k) for k in keys]
 
-    if year in kf:
+    if land_year in keys:
         return get_original_map_data(land_year)
 
-    if year < kf[0]:
+    if year <= kf[0]:
         return get_original_map(keys[0])
 
-    if year > kf[-1]:
+    if year >= kf[-1]:
         return get_original_map(keys[-1])
 
     for i in range(len(keys)):
-        if kf[i] < year < kf[i+1]:
+        if kf[i] <= year <= kf[i+1]:
             ds_out = get_original_map_data(keys[i])
             tmp = interp(get_original_map_data(keys[i])['z'].values,
                          get_original_map_data(keys[i+1])['z'].values,

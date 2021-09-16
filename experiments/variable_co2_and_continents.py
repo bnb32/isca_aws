@@ -12,12 +12,13 @@ import argparse
 
 from ecrlisca.preprocessing.utils import adjust_co2, adjust_continents, solar_constant
 from ecrlisca.experiment import Experiment as ecrlExp
-from ecrlisca.misc.utils import none_or_str
+from ecrlisca.misc.utils import none_or_str, land_year_range, min_land_year, max_land_year
 
 parser=argparse.ArgumentParser(description="Run variable co2 experiment")
 parser.add_argument('-multiplier',default=1)
 parser.add_argument('-co2',default=None,type=none_or_str)
-parser.add_argument('-land_year',default=0)
+parser.add_argument('-land_year',default=0,type=land_year_range,metavar=f'[{min_land_year}-{max_land_year}]',help="Years prior to current era in units of Ma")
+parser.add_argument('-sea_level',default=0,type=float)
 parser.add_argument('-nyears',default=5,type=int)
 parser.add_argument('-ncores',default=32,type=int)
 parser.add_argument('-overwrite',action='store_true')
@@ -49,7 +50,7 @@ co2_file = ecrlexp.co2_file.split('.nc')[0]
 land_file = ecrlexp.land_file
 
 adjust_co2(multiplier=args.multiplier,land_year=args.land_year,co2_value=args.co2,outfile=co2_file)
-adjust_continents(args.land_year)
+adjust_continents(land_year=args.land_year,sea_level=args.sea_level)
 
 exp.inputfiles = [os.path.join(base_dir,f'input/{co2_file}.nc'),
                   os.path.join(base_dir,f'input/land_masks/{land_file}'),
