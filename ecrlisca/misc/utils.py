@@ -4,6 +4,7 @@ import os
 
 land_years = glob.glob(os.environ.get("RAW_TOPO_DIR")+'/Map*.nc')
 land_years = sorted([float(l.strip('Ma.nc').split('_')[-1]) for l in land_years])
+land_years = [int(x) if int(x)==float(x) else float(x) for x in land_years]
 min_land_year = int(min(land_years))
 max_land_year = int(max(land_years))
 

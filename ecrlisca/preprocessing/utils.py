@@ -1,6 +1,7 @@
 import ecrlisca.environment
 from ecrlisca.data.co2 import series as co2series
 from ecrlisca.experiment import Experiment
+from ecrlisca.misc.utils import land_years
 import os
 import netCDF4 as nc
 import numpy as np
@@ -9,9 +10,6 @@ import xarray as xr
 import xesmf as xe
 import warnings
 warnings.filterwarnings("ignore")
-
-land_years = glob.glob(os.environ.get("RAW_TOPO_DIR")+'/Map*.nc')
-land_years = sorted([l.strip('Ma.nc').split('_')[-1] for l in land_years],key=lambda x:float(x))
 
 def solar_constant(land_year):
     #assuming years prior to current era is expressed as a positive value
@@ -69,9 +67,9 @@ def adjust_co2(multiplier=1,land_year=0,co2_value=None,outfile=None):
 
 def adjust_continents(land_year=0,sea_level=0):
     land = interpolate_land(land_year)
-    regrid_continent_data(land,land_year=land_year)
+    return regrid_continent_data(land,land_year=land_year,sea_level=sea_level)
 
-def regrid_continent_data(land,land_year=0):
+def regrid_continent_data(land,land_year=0,sea_level=0):
 
     base = xr.open_mfdataset(os.environ.get('BASE_TOPO_FILE'))
 
@@ -104,10 +102,10 @@ def interpolate_land(land_year):
         return get_original_map_data(land_year)
 
     if year <= kf[0]:
-        return get_original_map(keys[0])
+        return get_original_map_data(keys[0])
 
     if year >= kf[-1]:
-        return get_original_map(keys[-1])
+        return get_original_map_data(keys[-1])
 
     for i in range(len(keys)):
         if kf[i] <= year <= kf[i+1]:
