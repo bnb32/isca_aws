@@ -11,7 +11,7 @@ parser.add_argument('-co2',default=None, help="CO2 Value")
 parser.add_argument('-land_year',default=0,type=land_year_range,metavar=f'[{min_land_year}-{max_land_year}]',help="Years prior to current era in units of Ma")
 parser.add_argument('-sea_level',default=0,type=float)
 parser.add_argument('-ncores',default=32,type=int)
-parser.add_argument('-nyears',default=20,type=int)
+parser.add_argument('-nyears',default=10,type=int)
 parser.add_argument('-overwrite',action='store_true')
 args=parser.parse_args()
 

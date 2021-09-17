@@ -11,6 +11,14 @@ import os
 import ecrlisca.environment
 from ecrlisca.misc.utils import sig_round
 from ecrlisca.preprocessing.utils import solar_constant
+from ecrlisca.experiment import Experiment
+
+def potential_intensity(t_surf):
+    A = 28.2
+    B = 55.8
+    C = 0.1813
+    T0 = 30.0+273.15
+    return A+B*np.exp(C*(t_surf-T0))
 
 def define_land_colormap():
 
@@ -22,11 +30,25 @@ def define_land_colormap():
     unregister_cmap('land_cmap')
     plt.register_cmap(cmap=map_object)
 
-def get_data(experiment,field='t_surf',level=None,decode_times=True):
+def get_data(experiment,field='t_surf',level=None,decode_times=True,anomaly=False):
     data = xr.open_mfdataset(experiment.files,decode_times=decode_times)
     land = xr.open_mfdataset(os.path.join(os.environ.get('TOPO_DIR'),experiment.land_file),
-            decode_times=decode_times)
+            decode_times=False)
     
+    if field=='potential_intensity':
+        pi = potential_intensity(data['t_surf'].values)
+        data[field] = (data['t_surf'].dims,pi)
+        data[field].attrs['long_name'] = 'potential intensity'
+        data[field].attrs['units'] = 'm/s'
+
+    if anomaly:
+        #tmp = xr.open_mfdataset(Experiment(land_year=0).files,decode_times=decode_times) 
+        tmp = get_data(Experiment(land_year=0),field=field,level=level,anomaly=False)
+        data[field] = (tmp[field].dims,data[field].values-tmp[field].values.mean())
+    
+    if field=='potential_intensity':
+        data[field] = (data[field].dims,np.multiply(data[field].values,np.array(land['land_mask'].values < 1.0, dtype=float)))        
+
     if 'co2' in data:
         tmp = data[[field,'co2']]
     else:
@@ -44,7 +66,9 @@ def get_data(experiment,field='t_surf',level=None,decode_times=True):
     
     return tmp
 
-def get_avg_field(data,field='t_surf',vmin=None,vmax=None):
+def get_avg_field(exp,field='t_surf',level=None,vmin=None,vmax=None,anomaly=False):
+
+    data = get_data(exp,field=field,level=level,decode_times=True,anomaly=anomaly)
 
     land = data['land_mask']
 # Setup the initial plot
@@ -78,7 +102,6 @@ def get_avg_field(data,field='t_surf',vmin=None,vmax=None):
     else:
         ax.coastlines()
 
-
     try:
         cb = plt.colorbar(image, ax=ax, orientation='horizontal', pad=0.05, label=f'{variable.long_name} ({variable.units})')
     except:
@@ -100,11 +123,11 @@ def get_avg_field(data,field='t_surf',vmin=None,vmax=None):
     else:
         ax.set_title(f'Time Average',fontsize=20)
 
-def get_animation(exp,field='t_surf',level=None,vmin=None,vmax=None):
+def get_animation(exp,field='t_surf',level=None,vmin=None,vmax=None,anomaly=False):
 
-    data = get_data(exp,field=field,level=level,decode_times=True)
-    
+    data = get_data(exp,field=field,level=level,decode_times=True,anomaly=anomaly)
     land = data['land_mask']
+    
 # Setup the initial plot
     if 'co2' in data:
         co2 = data['co2']
@@ -136,7 +159,14 @@ def get_animation(exp,field='t_surf',level=None,vmin=None,vmax=None):
         cb = plt.colorbar(image, ax=ax, orientation='horizontal', pad=0.05, label=f'{variable.name}')
     
     if vmin is None or vmax is None:
-        image.set_clim(variable.values.min(),variable.values.max())
+        avg = variable.mean(dim=['time'])
+        std = np.std(variable.values)
+        
+        vmin = variable.values.min()#avg.values.min()-2*std
+        vmax = variable.values.max()#avg.values.max()+2*std
+
+        print(f"plotting with vmin={vmin}, vmax={vmax}")
+        image.set_clim(vmin,vmax)
     else:
         image.set_clim(vmin,vmax)
         
@@ -157,7 +187,11 @@ def get_animation(exp,field='t_surf',level=None,vmin=None,vmax=None):
     plt.close()
     animation = anim.FuncAnimation(fig, update, frames=range(len(variable.time)), blit=False)
     writervideo = anim.FFMpegWriter(fps=5) 
-    anim_file = os.path.join(os.environ.get('ISCA_REPO_DIR'),f'ecrlisca/postprocessing/anims/{exp.path_format}_{field}.mp4')
+    anim_file = os.path.join(os.environ.get('ISCA_REPO_DIR'),f'ecrlisca/postprocessing/anims/{exp.path_format}_{field}')
+    if anomaly:
+        anim_file += '_anomaly.mp4'
+    else:
+        anim_file += '.mp4'
     animation.save(anim_file, writer=writervideo)
     print(anim_file)
     #return HTML(animation.to_jshtml())        

@@ -24,22 +24,21 @@ def interpolate_co2(land_year):
     year = float(land_year)
 
     keys = sorted(co2series)
-    kf = [float(k) for k in keys]
 
     if land_year in keys:
-        return co2series[land_year]
+        return co2series[keys[land_years.index(land_year)]]
 
-    if year <= kf[0]:
+    if year <= keys[0]:
         return co2series[keys[0]]
 
-    if year >= kf[-1]:
+    if year >= keys[-1]:
         return co2series[keys[-1]]
 
     for i in range(len(keys)):
-        if kf[i] <= year <= kf[i+1]:
+        if keys[i] <= year <= keys[i+1]:
             return interp(co2series[keys[i]],
                           co2series[keys[i+1]],
-                          (year-kf[i])/(kf[i+1]-kf[i]))
+                          (year-keys[i])/(keys[i+1]-keys[i]))
 
 def adjust_co2(multiplier=1,land_year=0,co2_value=None,outfile=None):
     
@@ -96,23 +95,22 @@ def interpolate_land(land_year):
     year = float(land_year)
 
     keys = sorted(land_years)
-    kf = [float(k) for k in keys]
 
     if land_year in keys:
-        return get_original_map_data(land_year)
+        return get_original_map_data(keys[land_years.index(land_year)])
 
-    if year <= kf[0]:
+    if year <= keys[0]:
         return get_original_map_data(keys[0])
 
-    if year >= kf[-1]:
+    if year >= keys[-1]:
         return get_original_map_data(keys[-1])
 
     for i in range(len(keys)):
-        if kf[i] <= year <= kf[i+1]:
+        if keys[i] <= year <= keys[i+1]:
             ds_out = get_original_map_data(keys[i])
             tmp = interp(get_original_map_data(keys[i])['z'].values,
                          get_original_map_data(keys[i+1])['z'].values,
-                         (year-kf[i])/(kf[i+1]-kf[i]))
+                         (year-keys[i])/(keys[i+1]-keys[i]))
             ds_out['z'] = (ds_out['z'].dims,tmp)
             return ds_out
 
