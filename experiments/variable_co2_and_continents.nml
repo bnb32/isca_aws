@@ -3,7 +3,7 @@
 ! If you find you have a 'default' set of parameter choices, this method may be useful to ensure these are set consistently for all of your experiments. ! NB Note that this example is for a specific case, and would likely need modifying for your specific set-up.
 
 &main_nml
-    days   = 30,
+    days   = 360,
     hours  = 0,
     minutes = 0,
     seconds = 0,

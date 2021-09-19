@@ -10,9 +10,9 @@ from isca import IscaCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE
 
 import argparse
 
-from ecrlisca.preprocessing.utils import adjust_co2, adjust_continents, solar_constant
+from ecrlisca.preprocessing import adjust_co2, adjust_continents, solar_constant, eccentricity, obliquity
 from ecrlisca.experiment import Experiment as ecrlExp
-from ecrlisca.misc.utils import none_or_str, land_year_range, min_land_year, max_land_year
+from ecrlisca.misc import none_or_str, land_year_range, min_land_year, max_land_year
 
 parser=argparse.ArgumentParser(description="Run variable co2 experiment")
 parser.add_argument('-multiplier',default=1)
@@ -129,12 +129,17 @@ exp.update_namelist({
         'convection_scheme': 'SIMPLE_BETTS_MILLER', #Use simple Betts miller convection            
         'land_option': 'input',
         'land_file_name' : f'INPUT/{land_file}',
-    },    
+    },  
+
+    'astronomy_nml': {
+        'obliq' : obliquity(args.land_year),
+        'ecc' : eccentricity(args.land_year),
+    },
 
 })
 
 #Lets do a run!
 if __name__=="__main__":
     exp.run(1, use_restart=False, num_cores=NCORES, overwrite_data=args.overwrite)
-    for i in range(2,12*int(args.nyears)+1):
+    for i in range(2,int(args.nyears)+1):
         exp.run(i, num_cores=NCORES, overwrite_data=args.overwrite)
