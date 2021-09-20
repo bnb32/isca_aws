@@ -9,7 +9,7 @@ import ecrlisca.environment
 server = flask.Flask(__name__)
 app = dash.Dash(__name__, server=server)
 
-animation_directory = os.path.join(os.environ.get('ISCA_REPO_DIR'),'ecrlisca/postprocessing/anims/')
+animation_directory = os.path.join(os.environ['ISCA_REPO_DIR'],'ecrlisca/postprocessing/anims/')
 
 files = [f for f in os.listdir(animation_directory)]
 

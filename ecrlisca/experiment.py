@@ -7,7 +7,7 @@ class Experiment:
         self.multiplier = multiplier
         self.land_year = land_year
         self.path_format = f'variable_co2_{self.multiplier}x_continents_{self.land_year}Ma_experiment'
-        self.file_path = os.path.join(os.environ.get('GFDL_DATA'),self.path_format)
+        self.file_path = os.path.join(os.environ['GFDL_DATA'],self.path_format)
         self.files = sorted(glob.glob(os.path.join(self.file_path,'run*/atmos_monthly.nc')))
 
         self.name = f'variable_co2_{multiplier}x_continents_{land_year}Ma_experiment'

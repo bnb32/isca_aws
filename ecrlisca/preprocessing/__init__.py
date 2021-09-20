@@ -72,8 +72,8 @@ def adjust_co2(multiplier=1,land_year=0,co2_value=None,outfile=None):
     ecrlexp = Experiment(multiplier=multiplier,land_year=land_year,co2_value=co2_value)
 
     base_dir = os.path.dirname(os.path.realpath(__file__))
-    co2_path = os.environ.get('RAW_CO2_DIR')
-    input_dir = os.environ.get('CO2_DIR')
+    co2_path = os.environ['RAW_CO2_DIR']
+    input_dir = os.environ['CO2_DIR']
     new_file = os.path.join(input_dir,f'{ecrlexp.co2_file}')
 
     os.system(f'mkdir -p {input_dir}')
@@ -97,12 +97,12 @@ def adjust_continents(land_year=0,sea_level=0):
 
 def regrid_continent_data(land,land_year=0,sea_level=0):
 
-    base = xr.open_mfdataset(os.environ.get('BASE_TOPO_FILE'))
+    base = xr.open_mfdataset(os.environ['BASE_TOPO_FILE'])
 
     ds_out = xr.Dataset({'lat': (['lat'], base['lat'].values),
                          'lon': (['lon'], base['lon'].values)})
 
-    out_file = os.path.join(os.environ.get('TOPO_DIR'),Experiment(land_year=land_year).land_file)
+    out_file = os.path.join(os.environ['TOPO_DIR'],Experiment(land_year=land_year).land_file)
 
     regridder = xe.Regridder(land, ds_out, 'bilinear')
     tmp = land['z'].values
@@ -143,7 +143,7 @@ def interpolate_land(land_year):
 
 def get_original_map_data(land_year):
     land_year = str(land_year)
-    file = glob.glob(os.environ.get("RAW_TOPO_DIR")+f'/Map*_{land_year}Ma.nc')
+    file = glob.glob(os.environ["RAW_TOPO_DIR"]+f'/Map*_{land_year}Ma.nc')
     land = xr.open_mfdataset(file)
     return land
 

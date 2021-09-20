@@ -33,7 +33,7 @@ def define_land_colormap():
 
 def get_data(experiment,field='t_surf',level=None,decode_times=True,anomaly=False):
     data = xr.open_mfdataset(experiment.files,decode_times=decode_times)
-    land = xr.open_mfdataset(os.path.join(os.environ.get('TOPO_DIR'),experiment.land_file),
+    land = xr.open_mfdataset(os.path.join(os.environ['TOPO_DIR'],experiment.land_file),
             decode_times=False)
     
     if field=='potential_intensity':
@@ -188,7 +188,7 @@ def get_animation(exp,field='t_surf',level=None,vmin=None,vmax=None,anomaly=Fals
     plt.close()
     animation = anim.FuncAnimation(fig, update, frames=range(len(variable.time)), blit=False)
     writervideo = anim.FFMpegWriter(fps=5) 
-    anim_file = os.path.join(os.environ.get('ISCA_REPO_DIR'),f'ecrlisca/postprocessing/anims/{exp.path_format}_{field}')
+    anim_file = os.path.join(os.environ['ISCA_REPO_DIR'],f'ecrlisca/postprocessing/anims/{exp.path_format}_{field}')
     if anomaly:
         anim_file += '_anomaly.mp4'
     else:

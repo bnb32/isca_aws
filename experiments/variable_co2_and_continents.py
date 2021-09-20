@@ -55,7 +55,7 @@ adjust_continents(land_year=args.land_year,sea_level=args.sea_level)
 exp.inputfiles = [os.path.join(base_dir,f'input/{co2_file}.nc'),
                   os.path.join(base_dir,f'input/land_masks/{land_file}'),
                   #os.path.join(base_dir,'input/sst_clim_amip.nc'), 
-                  os.path.join(os.environ.get('GFDL_BASE'),'exp/test_cases/realistic_continents/input/siconc_clim_amip.nc')]
+                  os.path.join(os.environ['GFDL_BASE'],'exp/test_cases/realistic_continents/input/siconc_clim_amip.nc')]
 
 #Tell model how to write diagnostics
 diag = DiagTable()
