@@ -50,5 +50,4 @@ def serve_static(path):
     root_dir = os.getcwd()
     return flask.send_from_directory(os.path.join(root_dir, 'anims'), path)
 
-app.run_server(debug=False, use_reloader=False,port=8050)
-#app.run_server(debug=True, host='localhost', port=8050, use_reloader=False)
+app.run_server(debug=False, host='localhost', use_reloader=False,port=8050)
