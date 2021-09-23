@@ -9,20 +9,21 @@ pip install -e .
 
 Download required data and build environment:
 ```
-go.sh
+bash go.sh
 ```
 
 Run simulations:
 ```
-run_isca.py -multiplier <multiplier> -land_year <land_year>
+python run_isca.py -multiplier <multiplier> -land_year <land_year>
 ```
-
 Simulation output in directory defined in `ecrlisca/environment.py`.
 
-Modify namelist in `experiments/` to change simulation
+
+Modify namelist in `experiments/` to change simulations.
+
 
 Create animations:
 ```
-ecrlisca/posprocessing/get_animation.py -multiplier <multiplier> -land_year <land_year> -field <field> -level <level>
+python ecrlisca/posprocessing/get_animation.py -multiplier <multiplier> -land_year <land_year> -field <field> -level <level>
 ```
 Animation output in directory defined in `ecrlisca/environment.py`.
