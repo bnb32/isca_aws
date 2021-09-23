@@ -2,12 +2,27 @@
 
 code for setting up and running isca on aws
 
-1. Run `pip install -e .` to install module
+Install module:
+```
+pip install -e .
+```
 
-2. Run `go.sh` to download required data and build environment
+Download required data and build environment:
+```
+go.sh
+```
 
-3. Run `run_isca.py -multiplier <multiplier> -land_year <land_year>` for simulations. Output in directory defined in `ecrlisca/environment.py`.
+Run simulations:
+```
+run_isca.py -multiplier <multiplier> -land_year <land_year>
+```
 
-4. Modify namelist in `experiments/` to change simulation
+Simulation output in directory defined in `ecrlisca/environment.py`.
 
-5. Run `ecrlisca/posprocessing/get_animation.py -multiplier <multiplier> -land_year <land_year> -field <field> -level <level>` to create animation. Output in directory defined in `ecrlisca/environment.py`.
+Modify namelist in `experiments/` to change simulation
+
+Create animations:
+```
+ecrlisca/posprocessing/get_animation.py -multiplier <multiplier> -land_year <land_year> -field <field> -level <level>
+```
+Animation output in directory defined in `ecrlisca/environment.py`.
