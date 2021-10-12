@@ -21,7 +21,7 @@ cmd = f'cd {os.environ["TOPO_DIR"]}'
 cmd += f'; rm -rf {os.environ["RAW_TOPO_DIR"]}'
 cmd += f'; wget {data_source}'
 cmd += f'; unzip {zip_file}'
-cmd += f'; mv {zip_file.strip(".zip")}_v2 raw'
+cmd += f'; mv {zip_file.strip(".zip")}_v2 {os.environ["RAW_TOPO_DIR"]}'
 cmd += f'; rm {zip_file}'
 
 if args.download:
