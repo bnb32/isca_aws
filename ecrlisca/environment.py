@@ -24,7 +24,7 @@ os.environ['GFDL_WORK'] = GFDL_WORK
 GFDL_DATA=ROOT_DIR+"/gfdl_data"
 os.environ['GFDL_DATA'] = GFDL_DATA
 
-RAW_TOPO_DIR = os.path.join(ISCA_REPO_DIR,'experiments/input/land_masks/raw/')
+RAW_TOPO_DIR =f'/data/{NETID}/paleodem_raw'
 os.environ['RAW_TOPO_DIR'] = RAW_TOPO_DIR
 
 TOPO_DIR = os.path.join(ISCA_REPO_DIR,'experiments/input/land_masks/')
