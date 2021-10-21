@@ -1,5 +1,5 @@
+from ecrlgcm.misc import none_or_str, land_year_range, min_land_year, max_land_year
 from ecrlisca.postprocessing import get_animation, define_land_colormap
-from ecrlisca.misc import none_or_str, land_year_range, min_land_year, max_land_year
 import ecrlisca.environment
 from ecrlisca.experiment import Experiment
 

@@ -24,16 +24,21 @@ os.environ['GFDL_WORK'] = GFDL_WORK
 GFDL_DATA=ROOT_DIR+"/gfdl_data"
 os.environ['GFDL_DATA'] = GFDL_DATA
 
-RAW_TOPO_DIR =f'/data/{NETID}/paleodem_raw'
+RAW_TOPO_DIR =f'/data/{NETID}/inputdata/paleodem_raw'
 os.environ['RAW_TOPO_DIR'] = RAW_TOPO_DIR
 
-TOPO_DIR = os.path.join(ISCA_REPO_DIR,'experiments/input/land_masks/')
+TOPO_DIR = f'/data/{NETID}/inputdata/topo_files/isca'
 os.environ['TOPO_DIR'] = TOPO_DIR
+
+HIGH_RES_TOPO_DIR = f'/data/{NETID}/inputdata/topo_files/high_res'
+os.system(f'mkdir -p {HIGH_RES_TOPO_DIR}')
+os.environ['HIGH_RES_TOPO_DIR'] = HIGH_RES_TOPO_DIR
 
 RAW_CO2_DIR = os.path.join(GFDL_BASE,'exp/test_cases/variable_co2_concentration/input/')
 os.environ['RAW_CO2_DIR'] = RAW_CO2_DIR
 
-CO2_DIR = os.path.join(ISCA_REPO_DIR,'experiments/input')
+CO2_DIR = f'/data/{NETID}/inputdata/co2_files/isca'
+os.system(f'mkdir -p {CO2_DIR}')
 os.environ['CO2_DIR'] = CO2_DIR
 
 os.environ['BASE_TOPO_FILE'] = os.path.join(GFDL_BASE,'input/land_masks/era_land_t42.nc')

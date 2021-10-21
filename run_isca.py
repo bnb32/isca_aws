@@ -1,5 +1,6 @@
+from ecrlgcm.misc import land_year_range,min_land_year,max_land_year
 import ecrlisca.environment
-from ecrlisca.misc import land_year_range,min_land_year,max_land_year
+
 import os
 import argparse
 from multiprocessing import cpu_count

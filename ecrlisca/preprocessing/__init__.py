@@ -1,7 +1,7 @@
 import ecrlisca.environment
+from ecrlgcm.misc import get_logger, land_years
 from ecrlisca.data import co2_series, ecc_series, obl_series
 from ecrlisca.experiment import Experiment
-from ecrlisca.misc import land_years
 import os
 import netCDF4 as nc
 import numpy as np
@@ -10,6 +10,8 @@ import xarray as xr
 import xesmf as xe
 import warnings
 warnings.filterwarnings("ignore")
+
+logger = get_logger()
 
 def mila_cycle(Amin=0,Amax=0,Acurr=0,T=0,land_year=0):
 
@@ -103,6 +105,10 @@ def regrid_continent_data(land,land_year=0,sea_level=0):
                          'lon': (['lon'], base['lon'].values)})
 
     out_file = os.path.join(os.environ['TOPO_DIR'],Experiment(land_year=land_year).land_file)
+    
+    high_res_outfile = os.path.join(os.environ['TOPO_DIR'],f'high_res/{Experiment(land_year=land_year).land_file}')
+    land.to_netcdf(high_res_outfile)
+    logger.info(f'Saving high res map file: {high_res_outfile}')
 
     regridder = xe.Regridder(land, ds_out, 'bilinear')
     tmp = land['z'].values
@@ -115,7 +121,7 @@ def regrid_continent_data(land,land_year=0,sea_level=0):
     ds_out = ds_out.fillna(0)
     os.system(f'rm -f {out_file}')
     ds_out.to_netcdf(out_file)
-    print(f'{out_file}')
+    logger.info(f'Saving map file: {out_file}')
     return ds_out
 
 def interpolate_land(land_year):

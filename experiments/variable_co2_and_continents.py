@@ -12,7 +12,7 @@ import argparse
 
 from ecrlisca.preprocessing import adjust_co2, adjust_continents, solar_constant, eccentricity, obliquity
 from ecrlisca.experiment import Experiment as ecrlExp
-from ecrlisca.misc import none_or_str, land_year_range, min_land_year, max_land_year
+from ecrlgcm.misc import none_or_str, land_year_range, min_land_year, max_land_year
 
 parser=argparse.ArgumentParser(description="Run variable co2 experiment")
 parser.add_argument('-multiplier',default=1)
@@ -73,6 +73,7 @@ diag.add_field('atmosphere', 'convection_rain', time_avg=True)
 diag.add_field('atmosphere', 'condensation_rain', time_avg=True)
 diag.add_field('mixed_layer', 't_surf', time_avg=True)
 diag.add_field('dynamics', 'sphum', time_avg=True)
+diag.add_field('atmosphere', 'rh', time_avg=True)
 diag.add_field('dynamics', 'ucomp', time_avg=True)
 diag.add_field('dynamics', 'vcomp', time_avg=True)
 diag.add_field('dynamics', 'temp', time_avg=True)

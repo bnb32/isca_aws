@@ -1,5 +1,5 @@
+from ecrlgcm.misc import sig_round
 import ecrlisca.environment
-from ecrlisca.misc import sig_round
 from ecrlisca.preprocessing import solar_constant
 from ecrlisca.experiment import Experiment
 
