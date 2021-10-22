@@ -106,7 +106,7 @@ def regrid_continent_data(land,land_year=0,sea_level=0):
 
     out_file = os.path.join(os.environ['TOPO_DIR'],Experiment(land_year=land_year).land_file)
     
-    high_res_outfile = os.path.join(os.environ['TOPO_DIR'],f'high_res/{Experiment(land_year=land_year).land_file}')
+    high_res_outfile = os.path.join(os.environ['HIGH_RES_TOPO_DIR'],Experiment(land_year=land_year).land_file)
     land.to_netcdf(high_res_outfile)
     logger.info(f'Saving high res map file: {high_res_outfile}')
 
