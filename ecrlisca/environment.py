@@ -30,7 +30,7 @@ os.environ['RAW_TOPO_DIR'] = RAW_TOPO_DIR
 TOPO_DIR = f'/data/{NETID}/inputdata/topo_files/isca'
 os.environ['TOPO_DIR'] = TOPO_DIR
 
-HIGH_RES_TOPO_DIR = f'/data/{NETID}/inputdata/topo_files/high_res'
+HIGH_RES_TOPO_DIR = f'/data/{NETID}/inputdata/topo_files/isca/high_res'
 os.system(f'mkdir -p {HIGH_RES_TOPO_DIR}')
 os.environ['HIGH_RES_TOPO_DIR'] = HIGH_RES_TOPO_DIR
 

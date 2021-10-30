@@ -1,7 +1,8 @@
-import ecrlisca.environment
 from ecrlgcm.misc import get_logger, land_years
-from ecrlisca.data import co2_series, ecc_series, obl_series
+from ecrlgcm.data import co2_series, ecc_series, obl_series
 from ecrlisca.experiment import Experiment
+import ecrlisca.environment
+
 import os
 import netCDF4 as nc
 import numpy as np

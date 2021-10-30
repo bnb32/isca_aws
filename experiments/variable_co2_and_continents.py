@@ -10,8 +10,8 @@ from isca import IscaCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE
 
 import argparse
 
-from ecrlisca.preprocessing import adjust_co2, adjust_continents, solar_constant, eccentricity, obliquity
-from ecrlisca.experiment import Experiment as ecrlExp
+from ecrlgcm.preprocessing import adjust_co2, adjust_continents, solar_constant, eccentricity, obliquity
+from ecrlgcm.experiment import Experiment as ecrlExp
 from ecrlgcm.misc import none_or_str, land_year_range, min_land_year, max_land_year
 
 parser=argparse.ArgumentParser(description="Run variable co2 experiment")
@@ -42,7 +42,8 @@ cb = IscaCodeBase.from_directory(GFDL_BASE)
 cb.compile()  # compile the source code to working directory $GFDL_WORK/codebase
 # create an Experiment object to handle the configuration of model parameters
 # and output diagnostics
-ecrlexp = ecrlExp(multiplier=args.multiplier,land_year=args.land_year,co2_value=args.co2)
+ecrlexp = ecrlExp(gcm_type='isca',multiplier=args.multiplier,
+                  land_year=args.land_year,co2_value=args.co2)
 
 exp = Experiment(ecrlexp.name, codebase=cb)
 

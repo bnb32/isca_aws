@@ -1,5 +1,4 @@
 from ecrlgcm.misc import land_year_range,min_land_year,max_land_year
-import ecrlisca.environment
 
 import os
 import argparse
