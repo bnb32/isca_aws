@@ -1,18 +1,13 @@
-import os
-
-import numpy as np
-
-from multiprocessing import cpu_count
-
-import f90nml
-
-from isca import IscaCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE
-
-import argparse
-
-from ecrlgcm.preprocessing import adjust_co2, adjust_continents, solar_constant, eccentricity, obliquity
+from ecrlgcm.preprocessing import modify_isca_input_files,  solar_constant, eccentricity, obliquity
 from ecrlgcm.experiment import Experiment as ecrlExp
-from ecrlgcm.misc import none_or_str, land_year_range, min_land_year, max_land_year
+from ecrlgcm.misc import none_or_str, land_year_range, min_land_year, max_land_year, get_logger
+
+import os
+import numpy as np
+from multiprocessing import cpu_count
+import f90nml
+from isca import IscaCodeBase, DiagTable, Experiment, Namelist, GFDL_BASE
+import argparse
 
 parser=argparse.ArgumentParser(description="Run variable co2 experiment")
 parser.add_argument('-multiplier',default=1)
@@ -22,8 +17,10 @@ parser.add_argument('-sea_level',default=0,type=float)
 parser.add_argument('-nyears',default=5,type=int)
 parser.add_argument('-ncores',default=32,type=int)
 parser.add_argument('-overwrite',action='store_true')
+parser.add_argument('-remap',action='store_true')
 args=parser.parse_args()
 
+logger = get_logger()
 NCORES = int(args.ncores)
 base_dir = os.path.dirname(os.path.realpath(__file__))
 # a CodeBase can be a directory on the computer,
@@ -42,19 +39,25 @@ cb = IscaCodeBase.from_directory(GFDL_BASE)
 cb.compile()  # compile the source code to working directory $GFDL_WORK/codebase
 # create an Experiment object to handle the configuration of model parameters
 # and output diagnostics
-ecrlexp = ecrlExp(gcm_type='isca',multiplier=args.multiplier,
-                  land_year=args.land_year,co2_value=args.co2)
+ecrlexp = ecrlExp(gcm_type='isca',
+                  multiplier=args.multiplier,
+                  land_year=args.land_year,
+                  max_depth=0,
+                  co2_value=args.co2)
+
+if args.overwrite:
+    logger.info(f'Removing {ecrlexp.file_path}')
+    os.system(f'rm -rf {ecrlexp.file_path}')
 
 exp = Experiment(ecrlexp.name, codebase=cb)
 
-co2_file = ecrlexp.co2_file.split('.nc')[0]
+co2_file = ecrlexp.co2_file.rstrip('.nc')
 land_file = ecrlexp.land_file
 
-adjust_co2(multiplier=args.multiplier,land_year=args.land_year,co2_value=args.co2,outfile=co2_file)
-adjust_continents(land_year=args.land_year,sea_level=args.sea_level)
+modify_isca_input_files(ecrlexp,remap=args.remap)
 
-exp.inputfiles = [os.path.join(base_dir,f'input/{co2_file}.nc'),
-                  os.path.join(base_dir,f'input/land_masks/{land_file}'),
+exp.inputfiles = [ecrlexp.co2_file,
+                  ecrlexp.topo_file,
                   #os.path.join(base_dir,'input/sst_clim_amip.nc'), 
                   os.path.join(os.environ['GFDL_BASE'],'exp/test_cases/realistic_continents/input/siconc_clim_amip.nc')]
 
@@ -94,7 +97,7 @@ exp.namelist = nml
 
 exp.update_namelist({
     'spectral_init_cond_nml':{
-        'topog_file_name': f'{land_file}',
+        'topog_file_name': f'{ecrlexp.topo_file.split("/")[-1]}',
         'topography_option': 'input'
     },
 
@@ -113,7 +116,7 @@ exp.update_namelist({
         'do_seasonal':  True, #do_seasonal=True uses the GFDL astronomy module to calculate seasonally-varying insolation.
         'equinox_day':  0.75, #A calendar parameter to get autumn equinox in september, as in the standard earth calendar.
         'do_read_co2':  True, #Read in CO2 timeseries from input file
-        'co2_file':  f'{co2_file}', #Tell model name of co2 input file        
+        'co2_file':  f'{ecrlexp.co2_file.rstrip(".nc").split("/")[-1]}', #Tell model name of co2 input file        
         'solar_constant': solar_constant(args.land_year),
     },
 
@@ -130,7 +133,7 @@ exp.update_namelist({
         'two_stream_gray': True,     #Use the grey radiation scheme
         'convection_scheme': 'SIMPLE_BETTS_MILLER', #Use simple Betts miller convection            
         'land_option': 'input',
-        'land_file_name' : f'INPUT/{land_file}',
+        'land_file_name' : f'INPUT/{ecrlexp.topo_file.split("/")[-1]}',
     },  
 
     'astronomy_nml': {
@@ -140,7 +143,6 @@ exp.update_namelist({
 
 })
 
-#Lets do a run!
 if __name__=="__main__":
     exp.run(1, use_restart=False, num_cores=NCORES, overwrite_data=args.overwrite)
     for i in range(2,int(args.nyears)+1):

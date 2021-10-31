@@ -70,10 +70,11 @@ def interpolate_ecc(land_year):
 def interpolate_obl(land_year):
     return interpolate_series(land_year,obl_series)
 
-def adjust_co2(multiplier=1,land_year=0,co2_value=None,outfile=None):
+def adjust_co2(multiplier=1,land_year=0,co2_value=None):
     
     ecrlexp = Experiment(multiplier=multiplier,land_year=land_year,co2_value=co2_value)
 
+    logger.info('Modifying co2_file')
     base_dir = os.path.dirname(os.path.realpath(__file__))
     co2_path = os.environ['RAW_CO2_DIR']
     input_dir = os.environ['CO2_DIR']
@@ -82,6 +83,8 @@ def adjust_co2(multiplier=1,land_year=0,co2_value=None,outfile=None):
     os.system(f'mkdir -p {input_dir}')
     os.system(f'rm -f {new_file}')
     os.system(f'cp {co2_path}/co2.nc {new_file}')
+    logger.info(f'Saving co2_file: {new_file}')
+    '''
     filename = new_file
     ncfile = nc.Dataset(filename,'r+')
     co2 = ncfile.variables['co2']
@@ -93,6 +96,7 @@ def adjust_co2(multiplier=1,land_year=0,co2_value=None,outfile=None):
 
     ncfile.variables['co2'][:,:,:,:] = co2[:,:,:,:]
     ncfile.close()
+    '''
 
 def adjust_continents(land_year=0,sea_level=0):
     land = interpolate_land(land_year)
@@ -107,10 +111,11 @@ def regrid_continent_data(land,land_year=0,sea_level=0):
 
     out_file = os.path.join(os.environ['TOPO_DIR'],Experiment(land_year=land_year).land_file)
     
-    high_res_outfile = os.path.join(os.environ['HIGH_RES_TOPO_DIR'],Experiment(land_year=land_year).land_file)
-    land.to_netcdf(high_res_outfile)
-    logger.info(f'Saving high res map file: {high_res_outfile}')
-
+    #high_res_outfile = os.path.join(os.environ['HIGH_RES_TOPO_DIR'],Experiment(land_year=land_year).land_file)
+    #land.to_netcdf(high_res_outfile)
+    #logger.info(f'Saving high res map file: {high_res_outfile}')
+    
+    logger.info('Regridding topo_file')
     regridder = xe.Regridder(land, ds_out, 'bilinear')
     tmp = land['z'].values
     tmp[tmp<sea_level] = 0
@@ -122,7 +127,7 @@ def regrid_continent_data(land,land_year=0,sea_level=0):
     ds_out = ds_out.fillna(0)
     os.system(f'rm -f {out_file}')
     ds_out.to_netcdf(out_file)
-    logger.info(f'Saving map file: {out_file}')
+    logger.info(f'Saving map_file: {out_file}')
     return ds_out
 
 def interpolate_land(land_year):
