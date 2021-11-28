@@ -1,6 +1,6 @@
 # isca_aws #
 
-code for setting up and running isca on aws
+Code for setting up and running isca on aws. Requires gcm_aws repo.
 
 Install module:
 ```bash
