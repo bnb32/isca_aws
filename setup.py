@@ -9,6 +9,7 @@ setup(
     packages=['ecrlisca'],
     package_dir={'ecrlisca':'./ecrlisca'},
     install_requires=[
+        'ecrlgcm',
         'matplotlib',
         'xarray',
         'cartopy',
