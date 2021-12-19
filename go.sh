@@ -14,4 +14,4 @@ python ./scripts/init_env.py
 
 echo "Downloading and regridding paleo-continent maps"
 
-python ./scrips/get_maps.py -download -regrid
+python ./scripts/get_maps.py -download -regrid
